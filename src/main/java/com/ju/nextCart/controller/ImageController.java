@@ -5,6 +5,7 @@ import com.ju.nextCart.exceptions.ResourceNotFoundException;
 import com.ju.nextCart.model.Image;
 import com.ju.nextCart.response.ApiResponse;
 import com.ju.nextCart.service.image.IImageService;
+import jakarta.transaction.Transactional;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -26,7 +27,7 @@ public class ImageController {
         this.imageService = imageService;
     }
 
-    @PostMapping("/upload")
+    @PostMapping(path = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse> saveImages(@RequestParam  List<MultipartFile> files, @RequestParam Long productId) {
         try {
             List<ImageDTO> images = imageService.saveImage(files, productId);
@@ -36,6 +37,7 @@ public class ImageController {
         }
     }
 
+    @Transactional
     @GetMapping("/image/download/{imageId}")
     public ResponseEntity<ByteArrayResource> downloadImage(@PathVariable Long imageId) {
         Image image = imageService.getImageById(imageId);
